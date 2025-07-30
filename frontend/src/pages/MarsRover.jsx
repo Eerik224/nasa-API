@@ -10,7 +10,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react'
-import { endpoints, formatDate, handleApiError } from '../services/api'
+import { endpoints, formatDate, handleApiError, validateDate } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import toast from 'react-hot-toast'
 
@@ -96,7 +96,7 @@ const MarsRover = () => {
       if (data.photos && data.photos.length > 0) {
         toast.success(`Found ${data.photos.length} photos from ${selectedRover}`)
       } else {
-        toast.info('No photos found for the selected criteria')
+        toast('No photos found for the selected criteria')
       }
     } catch (error) {
       handleApiError(error, 'Failed to fetch Mars rover photos')
@@ -116,8 +116,13 @@ const MarsRover = () => {
   }
 
   const handleDateChange = (e) => {
-    setSelectedDate(e.target.value)
-    setCurrentPage(1)
+    const newDate = e.target.value
+    if (validateDate(newDate)) {
+      setSelectedDate(newDate)
+      setCurrentPage(1)
+    } else {
+      toast.error('Please select a valid date')
+    }
   }
 
   const handleCameraChange = (e) => {

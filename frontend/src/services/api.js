@@ -98,6 +98,11 @@ export const endpoints = {
 export const formatDate = (date) => {
   if (!date) return ''
   const d = new Date(date)
+  // Ensure we don't use future dates
+  const today = new Date()
+  if (d > today) {
+    return today.toISOString().split('T')[0]
+  }
   return d.toISOString().split('T')[0]
 }
 
@@ -114,13 +119,29 @@ export const formatDateForDisplay = (date) => {
 
 export const validateDate = (date) => {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-  return dateRegex.test(date)
+  if (!dateRegex.test(date)) return false
+  
+  const inputDate = new Date(date)
+  const today = new Date()
+  const minDate = new Date('1995-06-16') // APOD data starts from this date
+  
+  // Check if date is valid and not in the future
+  return inputDate >= minDate && inputDate <= today
 }
 
 export const getDateRange = (days = 7) => {
   const endDate = new Date()
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - days)
+  
+  // Ensure we don't use future dates
+  const today = new Date()
+  if (endDate > today) {
+    endDate.setTime(today.getTime())
+  }
+  if (startDate > today) {
+    startDate.setTime(today.getTime())
+  }
   
   return {
     startDate: formatDate(startDate),

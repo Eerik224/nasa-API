@@ -11,7 +11,7 @@ import {
   Info,
   Star
 } from 'lucide-react'
-import { endpoints, formatDate, formatDateForDisplay, handleApiError } from '../services/api'
+import { endpoints, formatDate, formatDateForDisplay, handleApiError, validateDate } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import toast from 'react-hot-toast'
 
@@ -53,8 +53,12 @@ const APOD = () => {
   // Handle date change
   const handleDateChange = (e) => {
     const newDate = e.target.value
-    setSelectedDate(newDate)
-    fetchAPOD(newDate)
+    if (validateDate(newDate)) {
+      setSelectedDate(newDate)
+      fetchAPOD(newDate)
+    } else {
+      toast.error('Please select a valid date between 1995-06-16 and today')
+    }
   }
 
   // Handle random APOD
@@ -176,7 +180,7 @@ const APOD = () => {
         <AnimatePresence mode="wait">
           {apod && (
             <motion.div
-              key={apod.date}
+              key={`${apod.date}-${apod.title}`}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -331,7 +335,7 @@ const APOD = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {apodHistory.slice(1).map((item, index) => (
                 <motion.div
-                  key={item.date}
+                  key={`${item.date}-${index}`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}

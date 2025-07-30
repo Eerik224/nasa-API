@@ -9,7 +9,7 @@ import {
   Search,
   Filter
 } from 'lucide-react'
-import { endpoints, formatDate, getDateRange, handleApiError } from '../services/api'
+import { endpoints, formatDate, getDateRange, handleApiError, validateDate } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import toast from 'react-hot-toast'
 
@@ -41,7 +41,7 @@ const NEOTracker = () => {
       if (data.neos && data.neos.length > 0) {
         toast.success(`Found ${data.neos.length} near-Earth objects`)
       } else {
-        toast.info('No near-Earth objects found for the selected date range')
+        toast('No near-Earth objects found for the selected date range')
       }
     } catch (error) {
       handleApiError(error, 'Failed to fetch NEO data')
@@ -55,7 +55,11 @@ const NEOTracker = () => {
   }, [dateRange])
 
   const handleDateRangeChange = (field, value) => {
-    setDateRange(prev => ({ ...prev, [field]: value }))
+    if (validateDate(value)) {
+      setDateRange(prev => ({ ...prev, [field]: value }))
+    } else {
+      toast.error('Please select a valid date')
+    }
   }
 
   const filteredNeos = neos.filter(neo => {

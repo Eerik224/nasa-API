@@ -29,7 +29,7 @@ app.use(compression());
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.vercel.app'] 
+    ? ['https://nasa-api-pearl.vercel.app'] 
     : ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true
 }));
